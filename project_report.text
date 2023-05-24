@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\title{ECS 171 Project Report}
+\author{Team 7}
+\date{May 23rd, 2023}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\subsection{Problem Statement}
+Message spam is an ongoing problem in the 21st century as millions of malicious texts are sent each day. Machine learning methods could 
+help us predict whether or not an incoming message should be flagged as spam depending on what the message contains. We chose the SMS 
+dataset by UCI Machine Learning to use as our test subject as we form a model that can flag incoming spam messages as accurately as 
+possible.
+\subsection{Dataset Description}
+Our dataset consists of 5,574 messages, some of which are spam and others which are ham (non-spain). Messages labeled spam are malicious 
+messages, while ham are genuine ones. 3,375 SMS messages are randomly chosen ham messages from the NUS SMS Corpus (which is a dataset 
+that contains over 10,000 real messages for research purposes). 425 SMS messages are manually taken from the Grumbletext website. 
+Another 450 are from Caroline Tag’s PhD thesis. The last 1,324 messages are from SMS Spam Corpus v.0.1 Big (which has been used for 
+research in the past).
+\subsection{Goal}
+The goal of this project is to use machine learning algorithms to detect whether a message is considered spam or not. This can be 
+done by traversing the messages within the dataset and counting the number of spam related elements. From this project, we will be 
+able to explore different machine learning algorithms and learn how to extract our own attributes from raw data.
+\end{document}
