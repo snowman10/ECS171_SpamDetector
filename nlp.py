@@ -1,3 +1,11 @@
+import tensorflow as tf
+from keras.preprocessing.text import Tokenizer
+from keras.layers import Embedding, LSTM, Dropout, Dense
+from keras.models import Sequential
+from keras.utils import to_categorical
+from keras_preprocessing.sequence import pad_sequences
+import tensorflow as tf
+
 import pandas as pd
 import numpy as np
 import seaborn
@@ -13,6 +21,14 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, multilabel_confusion_matrix
 from sklearn.metrics import mean_squared_error, accuracy_score, precision_score, recall_score
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+
+import matplotlib.pyplot as plt
+import scipy as sp
+
+from sklearn import feature_extraction, model_selection, naive_bayes, metrics, svm
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import precision_recall_fscore_support as score
 
 def readAndFormatData(file):
   data = pd.read_csv(file, encoding='latin-1')
@@ -63,34 +79,36 @@ data_text, data_class = splitTrainTest(data)
 data_text = data_text.apply(text_preprocess)
 data_text = data_text.apply(stemmer)
 
-accuracy, data_train, data_test, class_train, class_test, vectorizer, model = runVectorizer(data_text, data_class)
-print(accuracy)
+vocab_size = 400
+oov_tok = ""
+max_length = 250
+embedding_dim = 16
+encode = ({'ham': 0, 'spam': 1} )
+#new dataset with replaced values
 
-# seaborn.regplot(x=matrix[1], y=data_class, logistic=True, ci=None)
-# print(data_test[0])
-# data = input()
-# data = vectorizer.fit_transform([data])
-# print(data)
-# pred = model.predict(data)
-# print(pred)
+X = data_text
+Y = data_class
+tokenizer = Tokenizer(num_words=vocab_size, oov_token=oov_tok)
+tokenizer.fit_on_texts(X)
+# convert to sequence of integers
+X = tokenizer.texts_to_sequences(X)
 
-# pred = model.predict(np.array(input()).reshape(1,-1))
-# print(pred)
+X = np.array(X)
+y = np.array(Y)
+     
 
+X = pad_sequences(X, maxlen=max_length)
+     
 
+model = tf.keras.Sequential([
+    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
+    tf.keras.layers.GlobalAveragePooling1D(),
+    tf.keras.layers.Dense(24, activation='relu'),
+    tf.keras.layers.Dense(1, activation='sigmoid')
+])
+model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
+model.summary()
 
-
-
-# # If we need more pages in our report (0.0001 improvement)
-
-# length = message_data['length'].as_matrix()
-# new_mat = np.hstack((message_mat.todense(),length[:, None]))
-# message_train, message_test, spam_nospam_train, spam_nospam_test = train_test_split(new_mat, 
-#                                                         message_data['Spam/Not_Spam'], test_size=0.3, random_state=20)
-# from sklearn.linear_model import LogisticRegression
-# from sklearn.metrics import accuracy_score
-
-# Spam_model = LogisticRegression(solver='liblinear', penalty='l1')
-# Spam_model.fit(message_train, spam_nospam_train)
-# pred = Spam_model.predict(message_test)
-# accuracy_score(spam_nospam_test,pred)
+num_epochs = 50
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=.20, random_state=7)
+history = model.fit(X_train, y_train, epochs=num_epochs, validation_data=(X_test,y_test), verbose=2)
