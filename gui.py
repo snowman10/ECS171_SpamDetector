@@ -65,6 +65,9 @@ class CustomWidget:
   def _getContents(self, widget, key):
     return w.get("1.0", "end-1c") if widget == "entrybox" else (w:=self.widgets[widget][key].get())
 
+  def _setColor(self, widget, key, color):
+    self.widgets[widget][key].configure(fg=color)
+
 class CustomButton(CustomWidget):
 
   def BuildButton(
@@ -170,7 +173,7 @@ class CustomEntry(CustomWidget):
 class CustomLabel(CustomWidget):
 
   def BuildLabel(
-    self, preset=None, key="key", text="text", font="Courier", size=16, style="bold",
+    self, preset=None, key="key", text="text", font="Courier", size=16, style="bold", fg='black'
   ):
     if key in self.widgets["labels"]: Error("Label")
 
@@ -179,18 +182,21 @@ class CustomLabel(CustomWidget):
         master=self.root,
         text=text,
         font=[font, 24, style],
+        fg=fg
       )
     elif preset == "subtitle":
       self.widgets["labels"][key] = Label(
         master=self.root,
         text=text,
         font=[font, 16, style],
+        fg=fg
       )
     else:
       self.widgets["labels"][key] = Label(
         master=self.root,
         text=text,
-        font=[font, size, style]
+        font=[font, size, style],
+        fg=fg
       )
 
   def setLabelGrid(self, key, column, row, columnspan=1, rowspan=1, padx=0, pady=0):
@@ -198,6 +204,9 @@ class CustomLabel(CustomWidget):
 
   def updateLabel(self, key, text):
     self._updateLabel("labels", key, text)
+
+  def updateLabelColor(self, key, color):
+    self._setColor("labels", key, color)
 
 class CustomDropdown(CustomWidget):
 
