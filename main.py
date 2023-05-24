@@ -45,6 +45,17 @@ def stemmer(text):
     words += (stemmer.stem(i))+" "
   return words
 
+def runVectorizer(data_text, data_class):
+  vectorizer = TfidfVectorizer()
+  matrix = vectorizer.fit_transform(data_text)
+  data_train, data_test, class_train, class_test = train_test_split(matrix, data_class, test_size=0.1, random_state=13)
+
+  model = LogisticRegression(solver='liblinear', penalty='l1')
+  model.fit(data_train, class_train)
+  pred = model.predict(data_test)
+  accuracy = accuracy_score(class_test,pred)
+  return accuracy, data_train, data_test, class_train, class_test, vectorizer, model
+
 data = readAndFormatData("spam.csv")
 data = data.drop_duplicates(keep="first")
 stopwords = getStopwords()
@@ -52,18 +63,7 @@ data_text, data_class = splitTrainTest(data)
 data_text = data_text.apply(text_preprocess)
 data_text = data_text.apply(stemmer)
 
-vectorizer = TfidfVectorizer()
-matrix = vectorizer.fit_transform(data_text)
-data_train, data_test, class_train, class_test = train_test_split(matrix, data_class, test_size=0.1, random_state=13)
-
-# cls = LogisticRegression()
-# cls.fit(data_train, class_train)
-# print(classification_report(class_test, cls.predict(data_test)))
-
-model = LogisticRegression(solver='liblinear', penalty='l1')
-model.fit(data_train, class_train)
-pred = model.predict(data_test)
-accuracy = accuracy_score(class_test,pred)
+accuracy, data_train, data_test, class_train, class_test, vectorizer, model = runVectorizer(data_text, data_class)
 print(accuracy)
 
 # seaborn.regplot(x=matrix[1], y=data_class, logistic=True, ci=None)
