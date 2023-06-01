@@ -48,13 +48,17 @@ def getModel(data_train, class_train):
   bayes.fit(data_train, class_train)
   return bayes
 
-def NaiveBayes():
+def getDataSplit():
   data = readAndFormatData("spam.csv")
   data = data.drop_duplicates(keep="first")
 
   data_text, data_class = splitDataClass(data)
   data_text = data_text.apply(text_preprocess)
   data_text = data_text.apply(stemmer)
+
+
+def NaiveBayes():
+  data_text, data_class = getDataSplit()
 
   vectorizer = CountVectorizer(stop_words="english")
   x = vectorizer.fit_transform(data_text)
@@ -68,12 +72,7 @@ def NaiveBayes():
   return model, classification_report(class_test, pred), vectorizer
 
 def RandomForest():
-  data = readAndFormatData("spam.csv")
-  data = data.drop_duplicates(keep="first")
-
-  data_text, data_class = splitDataClass(data)
-  data_text = data_text.apply(text_preprocess)
-  data_text = data_text.apply(stemmer)
+  data_text, data_class = getDataSplit()
 
   vectorizer = CountVectorizer(stop_words="english")
   x = vectorizer.fit_transform(data_text)
@@ -87,12 +86,7 @@ def RandomForest():
   return model, classification_report(class_test, pred), vectorizer
 
 def Logistic():
-  data = readAndFormatData("spam.csv")
-  data = data.drop_duplicates(keep="first")
-
-  data_text, data_class = splitDataClass(data)
-  data_text = data_text.apply(text_preprocess)
-  data_text = data_text.apply(stemmer)
+  data_text, data_class = getDataSplit()
 
   vectorizer = TfidfVectorizer()
   matrix = vectorizer.fit_transform(data_text)
