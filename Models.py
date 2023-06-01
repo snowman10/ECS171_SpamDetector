@@ -56,6 +56,7 @@ def getDataSplit():
   data_text = data_text.apply(text_preprocess)
   data_text = data_text.apply(stemmer)
 
+  return data_text, data_class
 
 def NaiveBayes():
   data_text, data_class = getDataSplit()
