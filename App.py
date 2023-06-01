@@ -51,6 +51,7 @@ class App(Constructor):
     self.model = model
     self.vectorizer = vectorizer
     self.vectorizers.append(vectorizer)
+    self.setLabelGrid(key="logistic", column=0, row=2)
 
     text = "Naive Bayes Model Statistics\n\n"
     model, stats, vectorizer = NaiveBayes()
@@ -58,6 +59,7 @@ class App(Constructor):
     self.BuildLabel(key="bayes", text=text)
     self.models.append(model)
     self.vectorizers.append(vectorizer)
+    self.setLabelGrid(key="bayes", column=0, row=4)
 
     text = "Random Forest Model Statistics\n\n"
     model, stats, vectorizer = RandomForest()
@@ -65,6 +67,7 @@ class App(Constructor):
     self.BuildLabel(key="rf", text=text)
     self.models.append(model)
     self.vectorizers.append(vectorizer)
+    self.setLabelGrid(key="rf", column=0, row=6)
 
     self.BuildLabel(preset="title", key="status", text="Spam Status:")
     self.setLabelGrid(key="status", column=1, row=2)
@@ -77,10 +80,6 @@ class App(Constructor):
 
     self.BuildLabel(key="message", text=f"Message:\n{''.center(100)}")
     self.setLabelGrid(key="message", column=1, row=4, rowspan=2)
-
-    self.setLabelGrid(key="logistic", column=0, row=2)
-    self.setLabelGrid(key="bayes", column=0, row=4)
-    self.setLabelGrid(key="rf", column=0, row=6)
 
   def wrapString(self, string, n=10):
     words = string.split()
