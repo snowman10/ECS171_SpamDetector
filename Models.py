@@ -9,6 +9,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 
 def readAndFormatData(file):
   data = pd.read_csv(file, encoding='latin-1')
@@ -43,10 +45,20 @@ def stemmer(text):
     words += (stemmer.stem(i))+" "
   return words
 
-def getModel(data_train, class_train):
-  bayes = MultinomialNB(alpha=0.550010)
+def getBayesModel(data_train, class_train):
+  bayes = MultinomialNB(alpha=0.550010) # Ideal Alpha
   bayes.fit(data_train, class_train)
   return bayes
+
+def getRFModel(data_train, class_train):
+  rf = RandomForestClassifier(n_estimators=100, max_depth=None, n_jobs=-1)
+  model = rf.fit(data_train, class_train)
+  return model
+
+def getLogisticModel(data_train, class_train):
+  model = LogisticRegression(solver='liblinear', penalty='l1')
+  model.fit(data_train, class_train)
+  return model
 
 def getDataSplit():
   data = readAndFormatData("spam.csv")
@@ -62,12 +74,12 @@ def NaiveBayes():
   data_text, data_class = getDataSplit()
 
   vectorizer = CountVectorizer(stop_words="english")
-  x = vectorizer.fit_transform(data_text)
+  matrix = vectorizer.fit_transform(data_text)
   data_train, data_test, class_train, class_test = train_test_split(
-    x, data_class, test_size=0.1, random_state=42
+    matrix, data_class, test_size=0.1, random_state=42
   )
 
-  model = getModel(data_train, class_train)
+  model = getBayesModel(data_train, class_train)
   pred = model.predict(data_test)
 
   return model, classification_report(class_test, pred), vectorizer
@@ -76,12 +88,12 @@ def RandomForest():
   data_text, data_class = getDataSplit()
 
   vectorizer = CountVectorizer(stop_words="english")
-  x = vectorizer.fit_transform(data_text)
+  matrix = vectorizer.fit_transform(data_text)
   data_train, data_test, class_train, class_test = train_test_split(
-    x, data_class, test_size=0.1, random_state=42
+    matrix, data_class, test_size=0.1, random_state=42
   )
 
-  model = getModel(data_train, class_train)
+  model = getRFModel(data_train, class_train)
   pred = model.predict(data_test)
 
   return model, classification_report(class_test, pred), vectorizer
@@ -95,7 +107,7 @@ def Logistic():
     matrix, data_class, test_size=0.1, random_state=42
   )
 
-  model = getModel(data_train, class_train)
+  model = getLogisticModel(data_train, class_train)
   pred = model.predict(data_test)
 
   return model, classification_report(class_test, pred), vectorizer
