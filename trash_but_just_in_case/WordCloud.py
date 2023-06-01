@@ -1,3 +1,14 @@
+import wordcloud
+import pandas
+import matplotlib
+
+# Python program to generate WordCloud
+ 
+# importing all necessary modules
+from wordcloud import WordCloud, STOPWORDS
+import matplotlib.pyplot as plt
+import pandas as pd
+ 
 import pandas as pd
 import numpy as np
 import seaborn
@@ -13,14 +24,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, multilabel_confusion_matrix
 from sklearn.metrics import mean_squared_error, accuracy_score, precision_score, recall_score
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-
-import matplotlib.pyplot as plt
-import scipy as sp
-
-from sklearn import feature_extraction, model_selection, naive_bayes, metrics, svm
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import precision_recall_fscore_support as score
 
 def readAndFormatData(file):
   data = pd.read_csv(file, encoding='latin-1')
@@ -65,54 +68,65 @@ def runVectorizer(data_text, data_class):
   return accuracy, data_train, data_test, class_train, class_test, vectorizer, model
 
 data = readAndFormatData("spam.csv")
+
+# data = data[data['Class'] == 'ham'] 
+
+
+
 data = data.drop_duplicates(keep="first")
 stopwords = getStopwords()
 data_text, data_class = splitTrainTest(data)
 data_text = data_text.apply(text_preprocess)
 data_text = data_text.apply(stemmer)
 
-count_Class=pd.value_counts(data["Class"], sort= True)
-data = data.drop("Class", axis=1)
-# count_Class.plot(kind = 'bar',color = ["green","red"])
-# plt.title('Bar Plot')
-# plt.show()
-
-f = feature_extraction.text.CountVectorizer(stop_words = 'english')
-X = f.fit_transform(data_text)
-np.shape(X)
-
-X_train, X_test, y_train, y_test = model_selection.train_test_split(
-  X, data['numClass'], test_size=0.70, random_state=42)
+df = data_text
 
 
-list_alpha = np.arange(1/100000, 20, 0.11)
-score_train = np.zeros(len(list_alpha))
-score_test = np.zeros(len(list_alpha))
-recall_test = np.zeros(len(list_alpha))
-precision_test= np.zeros(len(list_alpha))
-count = 0
-for alpha in list_alpha:
-    bayes = naive_bayes.MultinomialNB(alpha=alpha)
-    bayes.fit(X_train, y_train)
-    score_train[count] = bayes.score(X_train, y_train)
-    score_test[count]= bayes.score(X_test, y_test)
-    recall_test[count] = metrics.recall_score(y_test, bayes.predict(X_test))
-    precision_test[count] = metrics.precision_score(y_test, bayes.predict(X_test))
-    count = count + 1
+# print(data)
+# exit(1)
+# df1 = data[data['Text'] == 'ham'] 
+# df = df1
+ 
+comment_words = ''
+stopwords = set(STOPWORDS)
+ 
+# iterate through the csv file
+for val in df.values:
+     
+    # typecaste each val to string
+    val = str(val)
+ 
+    # split the value
+    tokens = val.split()
+     
+    # Converts each token into lowercase
+    for i in range(len(tokens)):
+        tokens[i] = tokens[i].lower()
+     
+    comment_words += " ".join(tokens)+" "
+ 
+wordcloud = WordCloud(width = 1600, height = 800,
+                background_color = 'white',
+                stopwords = stopwords,
+                min_font_size = 10).generate(comment_words)
+ 
+# plot the WordCloud image                      
+# plt.figure(figsize = (16, 8), facecolor = None)
+# plt.imshow(wordcloud)
+# plt.axis("off")
+# plt.tight_layout(pad = 0)
 
-matrix = np.matrix(np.c_[list_alpha, score_train, score_test, recall_test, precision_test])
-models = pd.DataFrame(data = matrix, columns = 
-             ['alpha', 'Train Accuracy', 'Test Accuracy', 'Test Recall', 'Test Precision'])
-models.head(n=10)
-best_index = models['Test Accuracy'].idxmax()
-print(models.iloc[best_index, :])
+
+# print(data["Class"].value_counts())
+# x = [100,100]
+
+# print(data)
+# x = len(df[df.Text == "ham"])
+# y = len(df[df.Text == "spam"])
+
+# x = [x,y]
 
 
-
-
-rf = RandomForestClassifier(n_estimators=100,max_depth=None,n_jobs=-1)
-rf_model = rf.fit(X_train,y_train)
-
-y_pred=rf_model.predict(X_test)
-precision,recall,fscore,support =score(y_test,y_pred,pos_label=1, average ='binary')
-print('Precision : {} / Recall : {} / fscore : {} / Accuracy: {}'.format(round(precision,3),round(recall,3),round(fscore,3),round((y_pred==y_test).sum()/len(y_test),3)))
+plt.pie(data["Class"].value_counts(), labels = ["Not Spam", "Spam"], autopct = "%0.2f", colors=["forestgreen", "skyblue"])
+plt.title("Dataset Contents")
+plt.show()

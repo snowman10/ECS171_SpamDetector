@@ -1,10 +1,11 @@
-from gui import Constructor
+from Constructor import Constructor
+
+def submitCall(data):
+  submit(data())
 
 def submit(data):
-  print(x:=data())
+  print(x:=data)
 
-
-  # Process Data
 
   if x in ['spam', 'bad']:
     window.updateLabelColor("output", "red")
@@ -22,6 +23,11 @@ window.BuildLabel(preset="subtitle", key="output", text="N/A", fg='black')
 window.setLabelGrid(key="output", column=0, row=1, columnspan=1)
 window.BuildButton(preset="submit", key="submit")
 window.setButtonGrid(key="submit", column=0, row=3, columnspan=1)
-window.setButtonCmd(key="submit", function=submit, kwargs={"data":lambda:window.getEntry(key="predict")})
+window.setButtonCmd(key="submit", function=submitCall, kwargs={"data":lambda:window.getEntry(key="predict")})
+window.root.bind("<Return>", lambda x:submit(data=window.getEntry(key="predict")))
 
 window.root.mainloop()
+
+
+
+

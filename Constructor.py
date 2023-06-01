@@ -68,6 +68,9 @@ class CustomWidget:
   def _setColor(self, widget, key, color):
     self.widgets[widget][key].configure(fg=color)
 
+  def _setFocus(self, widget, key):
+    self.widgets[widget][key].focus_set()
+
 class CustomButton(CustomWidget):
 
   def BuildButton(
@@ -170,10 +173,13 @@ class CustomEntry(CustomWidget):
   def getEntry(self, key):
     return self._getContents("entries", key)
 
+  def setEntryFocus(self, key):
+    self._setFocus("entries", key)
+
 class CustomLabel(CustomWidget):
 
   def BuildLabel(
-    self, preset=None, key="key", text="text", font="Courier", size=16, style="bold", fg='black'
+    self, preset=None, key="key", text="text", font="Courier", size=8, style="bold", fg='black'
   ):
     if key in self.widgets["labels"]: Error("Label")
 
