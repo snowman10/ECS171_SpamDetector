@@ -70,10 +70,10 @@ def getDataSplit():
 
   return data_text, data_class
 
-def NaiveBayes():
+def NaiveBayes(output_dict=False):
   data_text, data_class = getDataSplit()
 
-  vectorizer = CountVectorizer(stop_words="english")
+  vectorizer = TfidfVectorizer()
   matrix = vectorizer.fit_transform(data_text)
   data_train, data_test, class_train, class_test = train_test_split(
     matrix, data_class, test_size=0.1, random_state=42
@@ -82,12 +82,12 @@ def NaiveBayes():
   model = getBayesModel(data_train, class_train)
   pred = model.predict(data_test)
 
-  return model, classification_report(class_test, pred), vectorizer
+  return model, classification_report(class_test, pred, output_dict=output_dict, target_names=["ham", "spam"]), vectorizer
 
-def RandomForest():
+def RandomForest(output_dict=False):
   data_text, data_class = getDataSplit()
 
-  vectorizer = CountVectorizer(stop_words="english")
+  vectorizer = TfidfVectorizer()
   matrix = vectorizer.fit_transform(data_text)
   data_train, data_test, class_train, class_test = train_test_split(
     matrix, data_class, test_size=0.1, random_state=42
@@ -96,9 +96,9 @@ def RandomForest():
   model = getRFModel(data_train, class_train)
   pred = model.predict(data_test)
 
-  return model, classification_report(class_test, pred), vectorizer
+  return model, classification_report(class_test, pred, output_dict=output_dict, target_names=["ham", "spam"]), vectorizer
 
-def Logistic():
+def Logistic(output_dict=False):
   data_text, data_class = getDataSplit()
 
   vectorizer = TfidfVectorizer()
@@ -110,4 +110,4 @@ def Logistic():
   model = getLogisticModel(data_train, class_train)
   pred = model.predict(data_test)
 
-  return model, classification_report(class_test, pred), vectorizer
+  return model, classification_report(class_test, pred, output_dict=output_dict, target_names=["ham", "spam"]), vectorizer
