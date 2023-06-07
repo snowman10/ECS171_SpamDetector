@@ -76,6 +76,6 @@ def main():
     print(f'Unknown Error Detected\n\n{e}')
 
 if __name__ == '__main__':
-  # main()
-  printClassReports()
+  main()
+  # printClassReports()
   # getBarPlot()
